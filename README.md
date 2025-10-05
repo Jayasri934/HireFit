@@ -1,6 +1,6 @@
 README.md Template: AI-Powered Resume Analyzer
 AI-Powered Resume Analyzer (HireFit Inspired)
-An intelligent, full-stack application leveraging Natural Language Processing (NLP) to screen resumes and provide job-seekers with an immediate ATS Compatibility Score and tailored feedback.
+An intelligent, application leveraging Natural Language Processing (NLP) to screen resumes and provide job-seekers with an immediate ATS Compatibility Score and tailored feedback.
 
 This tool aims to streamline the initial hiring phase by ensuring resumes are optimized for Applicant Tracking Systems (ATS) and aligned with the target job description.
 
@@ -26,7 +26,7 @@ Pandas & NumPy: For efficient data handling, cleaning, and numerical operations.
 
 NLP Toolkits: NLTK / spaCy (or whichever you used for tokenization and parsing).
 
-Frontend: HTML5, CSS3, JavaScript (if used), Bootstrap/Flexbox (for responsive design).
+Frontend: HTML5, CSS3
 
  Installation and Setup
 Follow these steps to run the project on your local machine.
