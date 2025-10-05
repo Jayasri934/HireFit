@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    /* Specific styles for the interactive Upload/Analysis elements */
+    .analysis-results {
+        margin-top: 40px;
+        padding: 35px; /* Increased padding */
+        border-radius: 12px;
+        background-color: var(--color-card-bg); /* Use card background */
+        box-shadow: 0 6px 15px var(--color-shadow);
+        text-align: left;
+    }
+    .progress-container {
+        width: 100%;
+        background-color: #455061; /* Darker grey for progress track */
+        border-radius: 15px;
+        margin-top: 15px;
+        overflow: hidden;
+        height: 38px; /* Taller progress bar */
+    }
+    .progress-bar {
+        height: 100%;
+        line-height: 38px; /* Vertically center text */
+        color: var(--color-primary-text);
+        text-align: right;
+        padding-right: 18px; /* More padding */
+        transition: width 1s ease-in-out;
+        font-weight: bold;
+        font-size: 17px; /* Larger font */
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    }
+    /* Style for the textareas to stand out */
+    #job_description {
+        min-height: 220px; /* Taller textarea */
+        font-family: 'Roboto Mono', monospace; /* Monospace font for code/description */
+        font-size: 0.95em;
+    }
+    .suggestion-list {
+        list-style: none;
+        padding: 0;
+    }
+    .suggestion-list li {
+        padding: 18px; /* More padding */
+        margin-bottom: 12px;
+        background-color: #222B3B; /* Main background color for list items */
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 6px solid; /* Thicker border */
+        transition: transform 0.2s, background-color 0.2s;
+        font-size: 1.1em;
+    }
+    .suggestion-list li:hover {
+        transform: translateX(8px); /* Moves more on hover */
+        background-color: #2C3748; /* Card background on hover */
+    }
+</style>
+
+<div class="content-card" style="max-width: 850px; text-align: center; padding: 50px;">
+    <h2 style="margin-bottom: 15px;">Resume Match Analysis</h2>
+    <p style="color: var(--color-secondary-text); margin-bottom: 40px; font-size: 1.15em;">
+        Upload your resume (PDF) and paste the job description to get instant compatibility analysis.
+    </p>
+    
+    <form method="POST" action="{{ url_for('upload') }}" enctype="multipart/form-data" style="margin-top: 25px;">
+        
+        <div class="form-group">
+            <label for="resume_file">1. Upload Your Resume (PDF only)</label>
+            <input type="file" id="resume_file" name="resume_file" accept=".pdf" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="job_description">2. Paste the Target Job Description</label>
+            <textarea id="job_description" name="job_description" rows="10" required placeholder="Paste the full, detailed text of the job description here..."></textarea>
+        </div>
+        
+        <button type="submit" class="cta-button" style="width: 100%; padding: 20px; font-size: 1.3em;">
+            Analyze Match & Update Profile
+        </button>
+    </form>
+    
+    {% if score is not none %}
+        <div class="analysis-results">
+            <h3 style="color: var(--color-accent); border-bottom: 2px solid #455061; padding-bottom: 15px; margin-bottom: 25px;">
+                Specific Job Match Score
+            </h3>
+            
+            <p style="color: var(--color-secondary-text); font-style: italic; margin-bottom: 10px; font-size: 1.05em;">
+                Your resume compatibility with the provided job description:
+            </p>
+
+            <div class="progress-container">
+                <div class="progress-bar" style="width: {{ score }}%; 
+                    background: 
+                    {% if score >= 80 %} var(--color-success); 
+                    {% elif score >= 50 %} var(--color-warning); 
+                    {% else %} var(--color-danger); 
+                    {% endif %};">
+                    {{ score }}%
+                </div>
+            </div>
+            
+            <hr style="border-top: 1px solid #455061; margin: 40px 0;">
+
+            <h3 style="color: var(--color-accent); border-bottom: 2px solid #455061; padding-bottom: 15px; margin-bottom: 25px;">
+                🚀 Top Job Category Suggestions
+            </h3>
+            <p style="color: var(--color-secondary-text); margin-bottom: 25px; font-style: italic; font-size: 1.05em;">
+                Based on your skills, these are your best career fits:
+            </p>
+            
+            <ul class="suggestion-list">
+                {% for item in job_suggestions | slice(5) %} 
+                    {% if item|length == 2 %}
+                        {% set category = item[0] %}
+                        {% set cat_score = item[1] %}
+                    <li style="border-left-color: 
+                        {% if cat_score | float >= 80 %} var(--color-success);
+                        {% elif cat_score | float >= 50 %} var(--color-warning);
+                        {% else %} var(--color-danger);
+                        {% endif %};">
+                        <span style="font-weight: bold; color: var(--color-primary-text);">{{ category }}</span>
+                        <span style="font-weight: bold; padding: 10px 15px; border-radius: 50px; font-size: 17px;
+                            background-color: 
+                            {% if cat_score | float >= 80 %} var(--color-success);
+                            {% elif cat_score | float >= 50 %} var(--color-warning);
+                            {% else %} var(--color-danger);
+                            {% endif %};
+                            color: var(--color-primary-text);">
+                            {{ cat_score }}%
+                        </span>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <p style="text-align: center; margin-top: 35px;">
+                <a href="{{ url_for('profile') }}" class="cta-button" style="background-color: var(--color-info); color: white; padding: 15px 40px; font-size: 1.1em;">
+                    View Detailed Skill Breakdown &rarr;
+                </a>
+            </p>
+
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

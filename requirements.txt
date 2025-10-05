@@ -1,0 +1,8 @@
+Flask
+Flask-SQLAlchemy
+Flask-Login
+werkzeug
+pypdf2
+nltk
+scikit-learn
+pandas

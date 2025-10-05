@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content-card" style="max-width: 700px; text-align: left;">
+    <h2 style="text-align: center;">About HireFit</h2>
+    <p style="color: var(--color-subtext);">
+        HireFit is an AI-powered resume analysis tool designed to help job seekers optimize their resumes and discover their best-fit career paths.
+    </p>
+    
+    <h3 style="color: var(--color-primary); border-bottom: 1px solid #3e4a68; padding-bottom: 5px; margin-top: 30px;">
+        Key Features:
+    </h3>
+    <ul style="color: var(--color-text); list-style-type: '👉 '; padding-left: 20px;">
+        <li style="margin-bottom: 15px;">
+            **Job Match Score:** Uses **TF-IDF Vectorization** and **Cosine Similarity** to instantly grade your resume against any specific job description.
+        </li>
+        <li style="margin-bottom: 15px;">
+            **Skill Analysis:** Extracts and analyzes skills from your resume using a **keyword lookup dictionary** for targeted career guidance.
+        </li>
+        <li style="margin-bottom: 15px;">
+            **Interactive UI:** Modern dark theme with immediate visual feedback, including **Progress Bars** and **Color-Coded Suggestions**.
+        </li>
+        <li style="margin-bottom: 15px;">
+            **Secure Profile:** User authentication is managed by **Flask-Login** and passwords are securely hashed using **Werkzeug**.
+        </li>
+    </ul>
+</div>
+{% endblock %}

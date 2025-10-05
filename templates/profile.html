@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    /* NOTE: All colors (var(--color-primary-text), etc.) are defined in base.html */
+    .profile-container {
+        width: 100%;
+        max-width: 1400px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        padding-bottom: 50px;
+    }
+
+    .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #E0E0E0;
+        padding-bottom: 15px;
+    }
+
+    .header-section h2 {
+        font-size: 2.5em;
+        margin: 0;
+        color: var(--color-primary-text);
+    }
+
+    /* Grid for Main Content: Match Score & Job Suggestions */
+    .analysis-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 30px;
+        align-items: stretch;
+    }
+
+    .card {
+        background-color: var(--color-secondary-bg);
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px var(--color-shadow);
+        height: 100%;
+    }
+    
+    .card h3 {
+        border-bottom: 2px solid #EEEEEE;
+        padding-bottom: 10px;
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-weight: 700;
+        color: var(--color-accent); /* Sage Green Accent */
+    }
+
+    /* Specific Match Score Styling (Left Column) */
+    .match-score-card {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .score-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-size: 3em;
+        font-weight: 800;
+        color: var(--color-secondary-bg); /* White text */
+        margin: 15px auto 25px auto;
+        background-color: var(--color-accent); /* Sage Green */
+    }
+
+    .score-label {
+        font-size: 1.1em;
+        color: var(--color-primary-text);
+        margin-top: 5px;
+        font-weight: 600;
+    }
+
+    /* Skills & Keywords Styling */
+    .skill-list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 15px;
+    }
+    .skill-tag {
+        /* Used a soft light green background */
+        background-color: #E8F5E9; 
+        color: var(--color-primary-text); 
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        font-weight: 500;
+        border: 1px solid #C8E6C9;
+    }
+
+    /* Job Suggestions Styling */
+    .suggestion-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .suggestion-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px dashed #E0E0E0;
+    }
+    .suggestion-item:last-child {
+        border-bottom: none;
+    }
+    .job-title {
+        font-weight: 600;
+        color: var(--color-primary-text);
+        font-size: 1.1em;
+    }
+    .match-percent {
+        font-weight: 700;
+        padding: 5px 10px;
+        border-radius: 6px;
+        color: var(--color-secondary-bg); /* White text */
+        min-width: 60px;
+        text-align: center;
+    }
+    /* Color coding for scores (uses standard success/warning/danger variables) */
+    .score-high { background-color: var(--color-success); }
+    .score-medium { background-color: var(--color-warning); }
+    .score-low { background-color: var(--color-danger); }
+    
+    /* Raw Text Visibility Toggle */
+    #rawTextToggle {
+        margin-top: 20px;
+        cursor: pointer;
+        color: var(--color-accent);
+        font-weight: 500;
+        text-decoration: underline;
+        font-size: 0.95em;
+    }
+    #rawTextContainer {
+        margin-top: 15px;
+        padding: 20px;
+        background-color: var(--color-primary-bg); /* Taupe background for contrast */
+        border: 1px solid #CFD8DC;
+        border-radius: 8px;
+        max-height: 400px;
+        overflow-y: scroll;
+        text-align: left;
+        display: none; 
+        font-size: 0.9em;
+        color: var(--color-secondary-text);
+        white-space: pre-wrap; 
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 992px) {
+        .analysis-grid {
+            grid-template-columns: 1fr;
+        }
+        .header-section {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="profile-container">
+
+    <div class="header-section">
+        <h2>👋 Welcome back, {{ current_user.username }}!</h2>
+        <form method="POST" action="{{ url_for('clear_resume') }}" style="display:inline;">
+            <button type="submit" class="cta-button cta-button-secondary">
+                Start New Resume
+            </button>
+        </form>
+    </div>
+
+    <div class="analysis-grid">
+        
+        <div class="card">
+            <div class="match-score-card">
+                <h3>Overall Match Overview</h3>
+                
+                <div class="score-circle">
+                    N/A
+                </div>
+                <div class="score-label">Specific Job Match Score</div>
+                <p style="margin-top:10px; font-size:0.95em; color: var(--color-secondary-text);">
+                    *Check the green alert banner for the score of your last uploaded job match.
+                </p>
+            </div>
+            
+            <hr style="border: 0; height: 1px; background-color: #eee; margin: 30px 0;">
+
+            <h3>Extracted Skills ({{ user_skills | length }})</h3>
+            {% if user_skills %}
+                <ul class="skill-list">
+                    {% for skill in user_skills %}
+                        <li class="skill-tag">{{ skill }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p style="color: var(--color-secondary-text);">No technical skills were extracted from your resume. Ensure you have included relevant keywords.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3>Top 5 Job Role Suggestions</h3>
+            <ul class="suggestion-list">
+                {% if job_suggestions %}
+                    {% for job, score in job_suggestions %}
+                    <li class="suggestion-item">
+                        <span class="job-title">{{ job }}</span>
+                        {% if score >= 80 %}
+                            {% set score_class = 'score-high' %}
+                        {% elif score >= 50 %}
+                            {% set score_class = 'score-medium' %}
+                        {% else %}
+                            {% set score_class = 'score-low' %}
+                        {% endif %}
+                        <span class="match-percent {{ score_class }}">{{ score }}%</span>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <p style="color: var(--color-secondary-text);">No job suggestions available. Please upload a resume with skills data.</p>
+                {% endif %}
+            </ul>
+        </div>
+        
+    </div>
+    
+    <div class="card" style="max-width: 100%;">
+        <div id="rawTextToggle">
+            Click to View Raw Resume Text
+        </div>
+        <div id="rawTextContainer">
+            {{ raw_resume_text | default('No resume text available.', true) }}
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript to handle the toggle of the raw resume text
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('rawTextToggle');
+        const container = document.getElementById('rawTextContainer');
+        const initialText = 'Click to View Raw Resume Text';
+
+        // Set initial state
+        container.style.display = 'none';
+        toggle.textContent = initialText;
+
+        toggle.addEventListener('click', function() {
+            const isVisible = container.style.display === 'block';
+            if (isVisible) {
+                container.style.display = 'none';
+                toggle.textContent = initialText;
+            } else {
+                container.style.display = 'block';
+                toggle.textContent = 'Click to Hide Raw Resume Text';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

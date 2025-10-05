@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content-card">
+    <h2 style="text-align: center; margin-bottom: 30px;">Create Account</h2>
+    <p style="text-align: center; color: var(--color-secondary-text); margin-bottom: 30px; font-size: 1.1em;">
+        Get started with your AI-powered resume analysis.
+    </p>
+
+    <form method="POST" action="{{ url_for('register') }}">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required placeholder="Choose a unique username">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="name@example.com">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Create a strong password">
+        </div>
+        
+        <button type="submit" class="cta-button" style="width: 100%; margin-top: 15px; padding: 18px; font-size: 1.25em;">Sign Up</button>
+    </form>
+    
+    <p style="text-align: center; margin-top: 35px; font-size: 1em; color: var(--color-secondary-text);">
+        Already have an account? 
+        <a href="{{ url_for('login') }}" style="color: var(--color-accent); text-decoration: none; font-weight: bold;">
+            Log In
+        </a>
+    </p>
+</div>
+{% endblock %}
